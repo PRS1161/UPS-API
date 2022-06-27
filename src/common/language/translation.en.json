@@ -1,0 +1,13 @@
+{
+    "SOMETHING_WENT_WRONG": "Something went wrong",
+    "SUCCESS_CREATE": "{{key}} created successfully",
+    "INVALID_REQUEST": "Invalid Request",
+    "GET_SUCCESS": "{{key}} Info get successfully",
+    "NOT_FOUND": "{{key}} Not Found",
+    "COMMON_SUCCESS": "{{key}} {{method}} successfully",
+    "INVALID_CREDENTIALS": "Please enter a valid Email or Password",
+    "UPDATE_RESOURCE": "{{key}} updated successfully",
+    "MISSMATCH_PASSWORD": "The old password you have entered is incorrect",
+    "RESET_PASSWORD": "Password has been reset successfully",
+    "ALREADY_EXISTS": "{{key}} already exists"
+}
