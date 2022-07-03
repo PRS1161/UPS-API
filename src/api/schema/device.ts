@@ -21,10 +21,11 @@ const DEVICE_SCHEMA = {
                 "string.base": "Location must be a string",
                 "any.required": "Location is required"
             }),
-            configuration: Joi.number().integer().required().messages({
-                "number.base": "Configuration must be a number",
-                "number.empty": "Configuration not allowed to be empty",
+            configuration: objectId().required().messages({
+                "string.empty": "Configuration not allowed to be empty",
+                "alternatives.types": "Configuration must be a string",
                 "any.required": "Configuration is required",
+                "string.pattern.name": "Invalid Configuration"
             }),
             phase: Joi.number().integer().required().messages({
                 "number.base": "Phase must be a number",

@@ -1,6 +1,4 @@
 import * as l10n from 'jm-ez-l10n';
-import { Container } from 'typedi';
-import AdminModel from '../../common/models/Admin.model';
 import CityModel from '../../common/models/City.model';
 import LocationModel from '../../common/models/Location.model';
 import status_code from '../../common/utils/StatusCodes';
@@ -9,9 +7,6 @@ import Logger from '../../common/loaders/logger';
 export class ILocation {
     static async addLocation(data: any) {
         try {
-            const token_data: any = Container.get('auth-token');
-            const admin = await AdminModel.findOne({ _id: token_data.id });
-            if (!admin) return { status: status_code.NOT_FOUND, message: l10n.t('NOT_FOUND', { key: 'Admin' }) };
             const city = await CityModel.findOne({ _id: data.cityId });
             if (!city) return { status: status_code.NOT_FOUND, message: l10n.t('NOT_FOUND', { key: 'City' }) };
             const location = await LocationModel.findOne({ name: data.name });
@@ -28,9 +23,6 @@ export class ILocation {
 
     static async updateLocation(data: any) {
         try {
-            const token_data: any = Container.get('auth-token');
-            const admin = await AdminModel.findOne({ _id: token_data.id });
-            if (!admin) return { status: status_code.NOT_FOUND, message: l10n.t('NOT_FOUND', { key: 'Admin' }) };
             const location = await LocationModel.findOne({ _id: data.id });
             if (location) return { status: status_code.NOT_FOUND, message: l10n.t('NOT_FOUND', { key: 'Location' }) };
 
@@ -50,10 +42,6 @@ export class ILocation {
 
     static async getLocation(data: any) {
         try {
-            const token_data: any = Container.get('auth-token');
-            const admin = await AdminModel.findOne({ _id: token_data.id });
-            if (!admin) return { status: status_code.NOT_FOUND, message: l10n.t('NOT_FOUND', { key: 'Admin' }) };
-
             if (data.id) {
                 const location = await LocationModel.findOne({ _id: data.id });
                 if (!location) return { status: status_code.NOT_FOUND, message: l10n.t('NOT_FOUND', { key: 'Location' }) };
@@ -104,9 +92,6 @@ export class ILocation {
 
     static async deleteLocation(id: string) {
         try {
-            const token_data: any = Container.get('auth-token');
-            const admin = await AdminModel.findOne({ _id: token_data.id });
-            if (!admin) return { status: status_code.NOT_FOUND, message: l10n.t('NOT_FOUND', { key: 'Admin' }) };
             const location = await LocationModel.findOne({ _id: id });
             if (!location) return { status: status_code.NOT_FOUND, message: l10n.t('NOT_FOUND', { key: 'Location' }) };
 

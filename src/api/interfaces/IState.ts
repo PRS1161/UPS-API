@@ -1,6 +1,4 @@
 import * as l10n from 'jm-ez-l10n';
-import { Container } from 'typedi';
-import AdminModel from '../../common/models/Admin.model';
 import StateModel from '../../common/models/State.model';
 import status_code from '../../common/utils/StatusCodes';
 import Logger from '../../common/loaders/logger';
@@ -8,9 +6,6 @@ import Logger from '../../common/loaders/logger';
 export class IState {
     static async addState(data: any) {
         try {
-            const token_data: any = Container.get('auth-token');
-            const admin = await AdminModel.findOne({ _id: token_data.id });
-            if (!admin) return { status: status_code.NOT_FOUND, message: l10n.t('NOT_FOUND', { key: 'Admin' }) };
             const state = await StateModel.findOne({ name: data.name });
             if (state) return { status: status_code.ALREADY_EXIST, message: l10n.t('ALREADY_EXISTS', { key: 'State' }) };
 
@@ -25,9 +20,6 @@ export class IState {
 
     static async updateState(data: any) {
         try {
-            const token_data: any = Container.get('auth-token');
-            const admin = await AdminModel.findOne({ _id: token_data.id });
-            if (!admin) return { status: status_code.NOT_FOUND, message: l10n.t('NOT_FOUND', { key: 'Admin' }) };
             const state = await StateModel.findOne({ _id: data.id });
             if (!state) return { status: status_code.NOT_FOUND, message: l10n.t('NOT_FOUND', { key: 'State' }) };
 
@@ -42,10 +34,6 @@ export class IState {
 
     static async getState(data: any) {
         try {
-            const token_data: any = Container.get('auth-token');
-            const admin = await AdminModel.findOne({ _id: token_data.id });
-            if (!admin) return { status: status_code.NOT_FOUND, message: l10n.t('NOT_FOUND', { key: 'Admin' }) };
-
             if (data.id) {
                 const state = await StateModel.findOne({ _id: data.id });
                 if (!state) return { status: status_code.NOT_FOUND, message: l10n.t('NOT_FOUND', { key: 'State' }) };
@@ -74,9 +62,6 @@ export class IState {
 
     static async deleteState(id: string) {
         try {
-            const token_data: any = Container.get('auth-token');
-            const admin = await AdminModel.findOne({ _id: token_data.id });
-            if (!admin) return { status: status_code.NOT_FOUND, message: l10n.t('NOT_FOUND', { key: 'Admin' }) };
             const state = await StateModel.findOne({ _id: id });
             if (!state) return { status: status_code.NOT_FOUND, message: l10n.t('NOT_FOUND', { key: 'State' }) };
 

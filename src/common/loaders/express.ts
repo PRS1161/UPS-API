@@ -25,10 +25,12 @@ export default ({ app }: { app: express.Application }) => {
 	app.use((err, req, res, next) => {
 		if (isCelebrateError) { //if joi produces an error, it's likely a client-side problem
 			if (err.details.get('body')) {
-				const errorBody = err.details.get('body'); // 'details' is a Map()
-				let { details } = errorBody;
-				details = details[0];
+				const { details: [details] } = err.details.get('body'); // 'details' is a Map()
 				return res.status(400).json({ status: '400', message: details.message, type: 'body' });
+			}
+			if (err.details.get('query')) {
+				const { details: [details] } = err.details.get('query'); // 'details' is a Map()
+				return res.status(400).json({ status: '400', message: details.message, type: 'query' });
 			}
 		}
 		next(err);

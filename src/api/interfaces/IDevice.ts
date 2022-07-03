@@ -1,20 +1,17 @@
 import * as l10n from 'jm-ez-l10n';
-import { Container } from 'typedi';
-import AdminModel from '../../common/models/Admin.model';
 import DeviceModel from '../../common/models/Device.model';
 import DeviceDataModel from '../../common/models/DeviceData.model';
+import ConfigurationModel from '../../common/models/Configuration.model';
 import status_code from '../../common/utils/StatusCodes';
 import Logger from '../../common/loaders/logger';
 
 export class IDevice {
     static async addDevice(data: any) {
         try {
-            const token_data: any = Container.get('auth-token');
-            const admin = await AdminModel.findOne({ _id: token_data.id });
-            if (!admin) return { status: status_code.NOT_FOUND, message: l10n.t('NOT_FOUND', { key: 'Admin' }) };
             const deviceId = await DeviceModel.findOne({ deviceId: data.deviceId });
             if (deviceId) return { status: status_code.ALREADY_EXIST, message: l10n.t('ALREADY_EXISTS', { key: 'Device' }) };
-
+            const configuration = await ConfigurationModel.findOne({ _id: data.configuration });
+            if (!configuration) return { status: status_code.NOT_FOUND, message: l10n.t('NOT_FOUND', { key: 'Configuration' }) };
             await DeviceModel.create(data);
             return { status: status_code.OK, message: l10n.t('SUCCESS_CREATE', { key: 'Device' }) };
 
@@ -26,16 +23,13 @@ export class IDevice {
 
     static async getDevice(data: any) {
         try {
-            const token_data: any = Container.get('auth-token');
-            const admin = await AdminModel.findOne({ _id: token_data.id });
-            if (!admin) return { status: status_code.NOT_FOUND, message: l10n.t('NOT_FOUND', { key: 'Admin' }) };
-
             if (data.id) {
-                let device = await DeviceModel.findOne({ _id: data.id }, { deviceId: 1, name: 1, location: 1, configuration:1, phase:1, status:1 }).lean();
+                let device = await DeviceModel.findOne({ _id: data.id }, { deviceId: 1, name: 1, location: 1, configuration: 1, phase: 1, status: 1 }).populate('configuration', 'attribute').lean();
                 if (!device) return { status: status_code.NOT_FOUND, message: l10n.t('NOT_FOUND', { key: 'Device' }) };
 
                 const [deviceData] = await DeviceDataModel.find({ deviceId: device._id }).limit(1).sort({ createdAt: -1 });
                 device.data = deviceData;
+                device.configuration = device.configuration.attribute;
 
                 return { status: status_code.OK, message: l10n.t('GET_SUCCESS', { key: 'Device' }), data: device };
             } else {
@@ -52,7 +46,34 @@ export class IDevice {
                     ];
                 }
 
-                const devices = await DeviceModel.find(condition).skip(page).limit(limit).sort({ createdAt: -1 });
+                const devices = await DeviceModel.aggregate([
+                    { $match: condition },
+                    {
+                        $lookup: {
+                            localField: 'configuration',
+                            foreignField: '_id',
+                            from: 'configuration',
+                            as: 'config',
+                            pipeline: [{ $project: { attribute: 1 } }]
+                        }
+                    },
+                    { $unwind: "$config" },
+                    {
+                        $project: {
+                            deviceId: 1,
+                            name: 1,
+                            configuration: "$config.attribute",
+                            phase: 1,
+                            location: 1,
+                            status: 1,
+                            createdAt: 1
+                        }
+                    },
+                    { $skip: page },
+                    { $limit: limit },
+                    { $sort: { createdAt: -1 } }
+                ]);
+
                 const count = await DeviceModel.countDocuments(condition);
 
                 return { status: status_code.OK, message: l10n.t('COMMON_SUCCESS', { key: 'Device list', method: "get" }), count, data: devices };

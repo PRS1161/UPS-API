@@ -3,7 +3,7 @@ import { Schema, model } from 'mongoose';
 export interface DeviceAttributes {
     deviceId: string,
     name: string,
-    configuration: number,
+    configuration: any,
     phase: number,
     location: string,
     // locationId: any,
@@ -23,9 +23,8 @@ const DeviceSchema = new Schema<DeviceAttributes>(
             type: String
         },
         configuration: {
-            type: Number,
-            enum: [5, 10],
-            default: 5
+            type: Schema.Types.ObjectId,
+            ref: "configuration"
         },
         phase: {
             type: Number,
