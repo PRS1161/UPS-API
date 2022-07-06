@@ -10,10 +10,11 @@ const CONFIGURATION_SCHEMA = {
                 "number.base": "Attribute must be a number",
                 "any.required": "Attribute is required"
             }),
-            settings: Joi.object().not({}).required().messages({
-                "any.invalid": "Settings not be an empty object",
-                "object.base": "Settings must be an object",
-                "any.required": "Settings is required"
+            settings: Joi.array().min(1).items(Joi.object().required()).required().messages({
+                "array.min": "Settings not be an empty array",
+                "array.base": "Settings must be an array",
+                "any.required": "Settings is required",
+                "object.base": "Settings must be an array of objects"
             })
         })
     }),
@@ -29,9 +30,10 @@ const CONFIGURATION_SCHEMA = {
             attribute: Joi.number().integer().optional().messages({
                 "number.base": "Attribute must be a number",
             }),
-            settings: Joi.object().not({}).optional().messages({
-                "any.invalid": "Settings not be an empty object",
-                "object.base": "Settings must be an object"
+            settings: Joi.array().min(1).items(Joi.object().required()).optional().messages({
+                "any.invalid": "Settings not be an empty array",
+                "array.base": "Settings must be an array",
+                "object.base": "Settings must be an array of objects"
             })
         })
     }),

@@ -14,7 +14,7 @@ const ConfigurationSchema = new Schema<ConfigurationAttributes>(
             type: Number
         },
         settings: {
-            type: {}
+            type: []
         },
         isDelete: {
             type: Boolean,
