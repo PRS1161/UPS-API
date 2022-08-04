@@ -60,7 +60,30 @@ export class IAdmin {
                     }
                 }
             ]);
-            const devices = await DeviceModel.find({}, { deviceId: 1, name: 1, location: 1, configuration: 1, status: 1 }).limit(5).sort({ createdAt: -1 });
+
+            const devices = await DeviceModel.aggregate([
+                {
+                    $lookup: {
+                        localField: 'configuration',
+                        foreignField: '_id',
+                        from: 'configuration',
+                        as: 'config',
+                        pipeline: [{ $project: { attribute: 1 } }]
+                    },
+                },
+                { $unwind: "$config" },
+                {
+                    $project: {
+                        deviceId: 1,
+                        name: 1,
+                        location: 1,
+                        configuration: "$config.attribute",
+                        status: 1
+                    }
+                },
+                { $limit: 5 },
+                { $sort: { createdAt: -1 } }
+            ]);
             const messages = await MessageModel.find().limit(5).sort({ createdAt: -1 });
             return { status: status_code.OK, message: l10n.t('COMMON_SUCCESS', { key: 'Dashboard data', method: 'get' }), data: { active, inActive, messages, devices } };
         } catch (error) {

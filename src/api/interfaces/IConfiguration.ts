@@ -31,7 +31,7 @@ export class IConfiguration {
     static async getConfiguration(data: any) {
         try {
             if (data.pagination === 'false') {
-                const configuration = await ConfigurationModel.find({}, { attribute: 1 }).sort({ attribute: 1 });
+                const configuration = await ConfigurationModel.find({ isDelete: false }, { attribute: 1 }).sort({ attribute: 1 });
                 return { status: status_code.OK, message: l10n.t('COMMON_SUCCESS', { key: 'Configuration list', method: "get" }), data: configuration };
             }
             if (data.id) {
