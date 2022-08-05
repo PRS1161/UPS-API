@@ -6,7 +6,6 @@ export interface DeviceAttributes {
     configuration: any,
     phase: number,
     location: string,
-    // locationId: any,
     data: any,
     status: number,
     createdAt?: Date,
@@ -31,10 +30,6 @@ const DeviceSchema = new Schema<DeviceAttributes>(
             enum: [1, 3],
             default: 1
         },
-        // locationId: {
-        //     type: Schema.Types.ObjectId,
-        //     ref: "location"
-        // },
         location: {
             type: String
         },
