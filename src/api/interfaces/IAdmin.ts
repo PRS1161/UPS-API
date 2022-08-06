@@ -52,7 +52,7 @@ export class IAdmin {
 
     static async dashboard() {
         try {
-            const [{ active, inActive } = []] = await DeviceModel.aggregate([
+            const [{ active = 0, inActive = 0 } = []] = await DeviceModel.aggregate([
                 {
                     $group: {
                         _id: null,
