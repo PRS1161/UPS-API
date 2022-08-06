@@ -2,25 +2,25 @@ import { Schema, model } from 'mongoose';
 import config from '../config';
 
 export const getVoltage = (value: any) => {
-    return value && value !== '' ? Number(value * config.VOLTAGE_CONVERT).toFixed(2) : 0.00;
+    return value ? Number(value * config.VOLTAGE_CONVERT).toFixed(2) : 0.00;
 };
 
 export const getPercentage = (value: any) => {
-    return value && value !== '' ? Number(value * config.PERCENTAGE_CONVERT).toFixed(2) : 0.00;
+    return value ? Number(value * config.PERCENTAGE_CONVERT).toFixed(2) : 0.00;
 };
 
 export interface DeviceDataAttributes {
     deviceId: any,
     dateTime: string,
-    outputVoltage: number,
-    currnetLoad: number,
-    frequency: number,
-    mainVoltage: number,
-    mainCurrent: number,
-    batteryVoltage: number,
-    currentBattery: number,
-    dischargeBattery: number,
-    restart: number
+    outputVoltage: Number,
+    currnetLoad: Number,
+    frequency: Number,
+    mainVoltage: Number,
+    mainCurrent: Number,
+    batteryVoltage: Number,
+    currentBattery: Number,
+    dischargeBattery: Number,
+    restart: Number
     createdAt?: Date,
     updatedAt?: Date
 }
