@@ -42,15 +42,6 @@ AdminSchema.pre('save', async function (next) {
     } else return next();
 });
 
-AdminSchema.pre('updateOne', async function (next) {
-    if (this._update.password) {
-        const salt = await bcrypt.genSalt(10);
-        const encryptPassword = await bcrypt.hash(this._update.password, salt);
-        this._update.password = encryptPassword;
-        next();
-    } else return next();
-});
-
 AdminSchema.methods.comparePassword = async (password, userPassword) => {
     return new Promise((resolve, reject) => {
         bcrypt.compare(password, userPassword, (err, result) => {

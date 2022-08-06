@@ -1,5 +1,6 @@
 import * as l10n from 'jm-ez-l10n';
 import { Container } from 'typedi';
+import bcrypt from 'bcryptjs';
 import AdminModel from '../../common/models/Admin.model';
 import DeviceModel from '../../common/models/Device.model';
 import MessageModel from '../../common/models/Message.model';
@@ -140,7 +141,10 @@ export class IAdmin {
             const verifyOldPassword = await admin.comparePassword(data.oldPassword, admin.password);
             if (!verifyOldPassword) return { status: status_code.BAD_REQUEST, message: l10n.t('MISSMATCH_PASSWORD') };
 
-            await AdminModel.updateOne({ _id: token_data.id }, { password: data.newPassword });
+            const salt = await bcrypt.genSalt(10);
+            const encryptPassword = await bcrypt.hash(data.newPassword, salt);
+
+            await AdminModel.updateOne({ _id: token_data.id }, { password: encryptPassword });
             return { status: status_code.OK, message: l10n.t('RESET_PASSWORD') };
 
         } catch (error) {
