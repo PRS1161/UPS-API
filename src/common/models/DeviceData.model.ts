@@ -1,6 +1,14 @@
 import { Schema, model } from 'mongoose';
 import config from '../config';
 
+export const getVoltage = (value: any) => {
+    return value && value !== '' ? Number(value * config.VOLTAGE_CONVERT).toFixed(2) : 0.00;
+};
+
+export const getPercentage = (value: any) => {
+    return value && value !== '' ? Number(value * config.PERCENTAGE_CONVERT).toFixed(2) : 0.00;
+};
+
 export interface DeviceDataAttributes {
     deviceId: any,
     dateTime: string,
@@ -29,58 +37,41 @@ const DeviceDataSchema = new Schema<DeviceDataAttributes>(
         },
         outputVoltage: {
             type: Number,
-            get: (value) => {
-                return Number(value * config.VOLTAGE_CONVERT).toFixed(2);
-            },
+            get: getVoltage,
             default: 0.0
         },
         currnetLoad: {
             type: Number,
-            get: (value) => {
-                return Number(value * config.PERCENTAGE_CONVERT).toFixed(2);
-            },
+            get: getPercentage,
             default: 0.0
         },
         frequency: {
             type: Number,
-            get: (value) => {
-                return Number(50);
-            },
-            default: 0.0
+            default: 50.0
         },
         mainVoltage: {
             type: Number,
-            get: (value) => {
-                return Number(value * config.VOLTAGE_CONVERT).toFixed(2);
-            },
+            get: getVoltage,
             default: 0.0
         },
         mainCurrent: {
             type: Number,
-            get: (value) => {
-                return Number(value * config.VOLTAGE_CONVERT).toFixed(2);
-            },
+            get: getVoltage,
             default: 0.0
         },
         batteryVoltage: {
             type: Number,
-            get: (value) => {
-                return Number(value * config.PERCENTAGE_CONVERT).toFixed(2);
-            },
+            get: getPercentage,
             default: 0.0
         },
         currentBattery: {
             type: Number,
-            get: (value) => {
-                return Number(value * config.PERCENTAGE_CONVERT).toFixed(2);
-            },
+            get: getPercentage,
             default: 0.0
         },
         dischargeBattery: {
             type: Number,
-            get: (value) => {
-                return Number(value * config.PERCENTAGE_CONVERT).toFixed(2);
-            },
+            get: getPercentage,
             default: 0.0
         },
         restart: {
