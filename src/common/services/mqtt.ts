@@ -26,6 +26,7 @@ export const iotConsumer = async () => {
         iotDevice.on('message', async function (topic, payload) {
             let data: any = JSON.parse(Buffer.from(payload).toString('utf8'));
             let device = await DeviceModel.findOne({ deviceId: data.deviceID });
+            if (!device) device = await DeviceModel.create({ deviceId: data.deviceID });
 
             data.deviceID = device._id;
 

@@ -72,7 +72,12 @@ export class IAdmin {
                         pipeline: [{ $project: { attribute: 1 } }]
                     },
                 },
-                { $unwind: "$config" },
+                {
+                    $unwind: {
+                        path: "$config",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
                 {
                     $project: {
                         deviceId: 1,

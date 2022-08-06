@@ -23,7 +23,8 @@ const DeviceSchema = new Schema<DeviceAttributes>(
         },
         configuration: {
             type: Schema.Types.ObjectId,
-            ref: "configuration"
+            ref: "configuration",
+            default: null
         },
         phase: {
             type: Number,
