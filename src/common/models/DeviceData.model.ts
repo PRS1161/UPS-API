@@ -1,31 +1,31 @@
 import { Schema, model } from 'mongoose';
 import config from '../config';
 
-export const getVoltage = (value: any) => {
+export const getVoltage = (value: number) => {
     return value ? Number(value * config.VOLTAGE_CONVERT).toFixed(2) : 0.00;
 };
 
-export const getPercentage = (value: any) => {
+export const getPercentage = (value: number) => {
     return value ? Number(value * config.PERCENTAGE_CONVERT).toFixed(2) : 0.00;
 };
 
-export interface DeviceDataAttributes {
-    deviceId: any,
-    dateTime: string,
-    outputVoltage: Number,
-    currnetLoad: Number,
-    frequency: Number,
-    mainVoltage: Number,
-    mainCurrent: Number,
-    batteryVoltage: Number,
-    currentBattery: Number,
-    dischargeBattery: Number,
-    restart: Number
-    createdAt?: Date,
-    updatedAt?: Date
-}
+// export interface DeviceDataAttributes {
+//     deviceId: any,
+//     dateTime: string,
+//     outputVoltage: Number,
+//     currnetLoad: Number,
+//     frequency: Number,
+//     mainVoltage: Number,
+//     mainCurrent: Number,
+//     batteryVoltage: Number,
+//     currentBattery: Number,
+//     dischargeBattery: Number,
+//     restart: Number
+//     createdAt?: Date,
+//     updatedAt?: Date
+// }
 
-const DeviceDataSchema = new Schema<DeviceDataAttributes>(
+const DeviceDataSchema = new Schema(
     {
         deviceId: {
             type: Schema.Types.ObjectId,
@@ -92,6 +92,6 @@ const DeviceDataSchema = new Schema<DeviceDataAttributes>(
     }
 );
 
-const DeviceDataModel = model<DeviceDataAttributes>('data', DeviceDataSchema);
+const DeviceDataModel = model('data', DeviceDataSchema);
 
 export default DeviceDataModel;
