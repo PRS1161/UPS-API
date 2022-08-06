@@ -47,7 +47,10 @@ const DeviceDataSchema = new Schema(
         },
         frequency: {
             type: Number,
-            default: 50.0
+            get: (value) => {
+                return Number(50);
+            },
+            default: 0.0
         },
         mainVoltage: {
             type: Number,
