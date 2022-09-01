@@ -23,7 +23,7 @@ export default {
 	 * Your favorite port
 	 */
 	PORT: parseInt(process.env.PORT, 10),
-	
+
 	/* Encryption keys */
 	ENC_KEY: process.env.ENC_KEY,
 	ENC_IV: process.env.ENC_IV,
@@ -32,7 +32,7 @@ export default {
 	JWT_SECRET: process.env.JWT_SECRET,
 	CIPHER_SECRET: process.env.CIPHER_SECRET,
 	JWT_TTL: process.env.JWT_TTL,
-	
+
 	/* MongoDB */
 	MONGO_URI: process.env.MONGO_URI,
 
@@ -43,10 +43,15 @@ export default {
 	CA_PATH: process.env.CA_PATH,
 	HOST: process.env.HOST,
 
-	/* Conversation formulas */
-	VOLTAGE_CONVERT: 0.2246,
-	PERCENTAGE_CONVERT: 0.0976,
-	
+	/* Configuration */
+	CONFIGURATION: 5,
+	OUTPUT_VOLTAGE: 0.1125,
+	CURRENT_LOAD: 0.0083,
+	MAIN_VOLTAGE: 0.1125,
+	FREQUENCY: 50,
+	BATTERY_VOLTAGE: 0.0937,
+	CURRENT_BATTERY: 0.0025,
+	DISCHARGE_BATTERY: 0,
 
 	/**
 	 * Used by winston logger

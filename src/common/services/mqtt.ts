@@ -1,6 +1,7 @@
 import { device } from "aws-iot-device-sdk";
+import ConfigurationModel from "../../common/models/Configuration.model";
 import DeviceModel from "../../common/models/Device.model";
-import DeviceDataModel from "../../common/models/DeviceData.model";
+import DeviceDataModel, { calculateValue } from "../../common/models/DeviceData.model";
 import MessageModel from '../../common/models/Message.model';
 import config from "../config";
 import Logger from '../loaders/logger';
@@ -25,8 +26,9 @@ export const iotConsumer = async () => {
 
         iotDevice.on('message', async function (topic, payload) {
             let data: any = JSON.parse(Buffer.from(payload).toString('utf8'));
+            const { settings, _id } = await ConfigurationModel.findOne({ attribute: config.CONFIGURATION }, { settings: 1 });
             let device = await DeviceModel.findOne({ deviceId: data.deviceID });
-            if (!device) device = await DeviceModel.create({ deviceId: data.deviceID });
+            if (!device) device = await DeviceModel.create({ deviceId: data.deviceID, configuration: _id });
 
             data.deviceID = device._id;
 
@@ -37,14 +39,14 @@ export const iotConsumer = async () => {
                     deviceId: data["deviceID"],
                     type: 0
                 }
-                const message = await MessageModel.create(messageData);
+                await MessageModel.create(messageData);
                 deviceData(data.deviceID, { error: data["Error"] });
             } else {
                 const saveData = {
                     deviceId: data["deviceID"],
                     dateTime: data["Date-Time"],
                     outputVoltage: data["Parameter1"],
-                    currnetLoad: data["Parameter2"],
+                    currentLoad: data["Parameter2"],
                     batteryVoltage: data["Parameter3"],
                     currentBattery: data["Parameter4"],
                     dischargeBattery: data["Parameter5"],
@@ -53,7 +55,17 @@ export const iotConsumer = async () => {
                     frequency: data["Parameter8"],
                     restart: data["Restart-Count"]
                 }
-                const newDeviceData = await DeviceDataModel.create(saveData);
+                let newDeviceData: any = await DeviceDataModel.create(saveData);
+
+                newDeviceData = newDeviceData.toJSON();
+                newDeviceData.outputVoltage = calculateValue(newDeviceData.outputVoltage, settings[0].key);
+                newDeviceData.currentLoad = calculateValue(newDeviceData.currentLoad, settings[1].key);
+                newDeviceData.mainVoltage = calculateValue(newDeviceData.mainVoltage, settings[2].key);
+                newDeviceData.frequency = newDeviceData.mainVoltage != 0 ? config.FREQUENCY : 0;
+                newDeviceData.batteryVoltage = calculateValue(newDeviceData.batteryVoltage, settings[4].key);
+                newDeviceData.currentBattery = calculateValue(newDeviceData.currentBattery, settings[5].key);
+                newDeviceData.dischargeBattery = calculateValue(newDeviceData.dischargeBattery, settings[6].key);
+
                 deviceData(data.deviceID, newDeviceData);
             }
         });

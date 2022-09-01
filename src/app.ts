@@ -6,6 +6,7 @@ import { Server } from "socket.io";
 import Logger from './common/loaders/logger';
 import config from './common/config';
 import { Global } from './global';
+import { defaultConfiguration } from './common/helpers';
 
 async function startServer() {
 	const app = express();
@@ -34,6 +35,7 @@ async function startServer() {
 	Global.io = new Server(server, { cors: { origin: '*' } });
 
 	import('./common/sockets/rooms');
+	defaultConfiguration();
 }
 
 startServer();

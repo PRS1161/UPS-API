@@ -6,6 +6,9 @@ import Logger from '../../common/loaders/logger';
 export class IConfiguration {
     static async addCounfiguration(data: any) {
         try {
+            const config = await ConfigurationModel.findOne({ attribute: data.attribute });
+            if (config) return { status: status_code.ALREADY_EXIST, message: l10n.t('ALREADY_EXISTS', { key: 'Configuration' }) };
+
             await ConfigurationModel.create(data);
             return { status: status_code.OK, message: l10n.t('SUCCESS_CREATE', { key: 'Configuration' }) };
 

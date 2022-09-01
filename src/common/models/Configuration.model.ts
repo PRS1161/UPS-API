@@ -11,7 +11,8 @@ export interface ConfigurationAttributes {
 const ConfigurationSchema = new Schema<ConfigurationAttributes>(
     {
         attribute: {
-            type: Number
+            type: Number,
+            unique: true
         },
         settings: {
             type: []

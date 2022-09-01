@@ -1,10 +1,11 @@
 import * as l10n from 'jm-ez-l10n';
 import { Types } from 'mongoose';
 import DeviceModel from '../../common/models/Device.model';
-import DeviceDataModel from '../../common/models/DeviceData.model';
+import DeviceDataModel, { calculateValue } from '../../common/models/DeviceData.model';
 import ConfigurationModel from '../../common/models/Configuration.model';
 import status_code from '../../common/utils/StatusCodes';
 import Logger from '../../common/loaders/logger';
+import config from '../../common/config';
 
 export class IDevice {
     static async addDevice(data: any) {
@@ -34,7 +35,7 @@ export class IDevice {
                                 foreignField: '_id',
                                 from: 'configuration',
                                 as: 'config',
-                                pipeline: [{ $project: { attribute: 1 } }]
+                                pipeline: [{ $project: { attribute: 1, _id: 1 } }]
                             }
                         },
                         {
@@ -48,6 +49,7 @@ export class IDevice {
                                 deviceId: 1,
                                 name: 1,
                                 configuration: "$config.attribute",
+                                configurationId: "$config._id",
                                 phase: 1,
                                 location: 1,
                                 status: 1,
@@ -58,7 +60,18 @@ export class IDevice {
 
                     if (!device) return { status: status_code.NOT_FOUND, message: l10n.t('NOT_FOUND', { key: 'Device' }) };
 
-                    const [deviceData] = await DeviceDataModel.find({ deviceId: device._id }).limit(1).sort({ createdAt: -1 });
+                    const { settings } = await ConfigurationModel.findOne({ _id: device.configurationId }, { settings: 1, _id: 0 });
+
+                    let [deviceData]: any = await DeviceDataModel.find({ deviceId: device._id }).limit(1).sort({ createdAt: -1 });
+                    deviceData = deviceData.toJSON();
+                    deviceData.outputVoltage = calculateValue(deviceData.outputVoltage, settings[0].key);
+                    deviceData.currentLoad = calculateValue(deviceData.currentLoad, settings[1].key);
+                    deviceData.mainVoltage = calculateValue(deviceData.mainVoltage, settings[2].key);
+                    deviceData.frequency = deviceData.mainVoltage != 0 ? config.FREQUENCY : 0;
+                    deviceData.batteryVoltage = calculateValue(deviceData.batteryVoltage, settings[4].key);
+                    deviceData.currentBattery = calculateValue(deviceData.currentBattery, settings[5].key);
+                    deviceData.dischargeBattery = calculateValue(deviceData.dischargeBattery, settings[6].key);
+
                     device.data = deviceData;
 
                     return { status: status_code.OK, message: l10n.t('GET_SUCCESS', { key: 'Device' }), data: device };
