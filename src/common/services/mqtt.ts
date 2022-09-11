@@ -61,7 +61,7 @@ export const iotConsumer = async () => {
                 newDeviceData.outputVoltage = calculateValue(newDeviceData.outputVoltage, settings[0].key);
                 newDeviceData.currentLoad = calculateValue(newDeviceData.currentLoad, settings[1].key);
                 newDeviceData.mainVoltage = calculateValue(newDeviceData.mainVoltage, settings[2].key);
-                newDeviceData.frequency = newDeviceData.mainVoltage != 0 ? config.FREQUENCY : 0;
+                newDeviceData.frequency = newDeviceData.outputVoltage != 0 ? config.FREQUENCY : 0;
                 newDeviceData.batteryVoltage = calculateValue(newDeviceData.batteryVoltage, settings[4].key);
                 newDeviceData.currentBattery = calculateValue(newDeviceData.currentBattery, settings[5].key);
                 newDeviceData.dischargeBattery = calculateValue(newDeviceData.dischargeBattery, settings[6].key);

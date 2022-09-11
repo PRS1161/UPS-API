@@ -63,16 +63,18 @@ export class IDevice {
                     const { settings } = await ConfigurationModel.findOne({ _id: device.configurationId }, { settings: 1, _id: 0 });
 
                     let [deviceData]: any = await DeviceDataModel.find({ deviceId: device._id }).limit(1).sort({ createdAt: -1 });
-                    deviceData = deviceData.toJSON();
-                    deviceData.outputVoltage = calculateValue(deviceData.outputVoltage, settings[0].key);
-                    deviceData.currentLoad = calculateValue(deviceData.currentLoad, settings[1].key);
-                    deviceData.mainVoltage = calculateValue(deviceData.mainVoltage, settings[2].key);
-                    deviceData.frequency = deviceData.mainVoltage != 0 ? config.FREQUENCY : 0;
-                    deviceData.batteryVoltage = calculateValue(deviceData.batteryVoltage, settings[4].key);
-                    deviceData.currentBattery = calculateValue(deviceData.currentBattery, settings[5].key);
-                    deviceData.dischargeBattery = calculateValue(deviceData.dischargeBattery, settings[6].key);
+                    if (deviceData) {
+                        deviceData = deviceData.toJSON();
+                        deviceData.outputVoltage = calculateValue(deviceData.outputVoltage, settings[0].key);
+                        deviceData.currentLoad = calculateValue(deviceData.currentLoad, settings[1].key);
+                        deviceData.mainVoltage = calculateValue(deviceData.mainVoltage, settings[2].key);
+                        deviceData.frequency = deviceData.outputVoltage != 0 ? config.FREQUENCY : 0;
+                        deviceData.batteryVoltage = calculateValue(deviceData.batteryVoltage, settings[4].key);
+                        deviceData.currentBattery = calculateValue(deviceData.currentBattery, settings[5].key);
+                        deviceData.dischargeBattery = calculateValue(deviceData.dischargeBattery, settings[6].key);
 
-                    device.data = deviceData;
+                        device.data = deviceData;
+                    }
 
                     return { status: status_code.OK, message: l10n.t('GET_SUCCESS', { key: 'Device' }), data: device };
                 } else {
@@ -147,6 +149,16 @@ export class IDevice {
 
             await DeviceModel.updateOne({ _id: id }, updateData);
             return { status: status_code.OK, message: l10n.t('UPDATE_RESOURCE', { key: 'Device' }) };
+        } catch (error) {
+            Logger.error(error);
+            return { status: status_code.INTERNAL_SERVER_ERROR, message: l10n.t('SOMETHING_WENT_WRONG') };
+        }
+    }
+
+    static async deleteDevice(id: string) {
+        try {
+            await DeviceModel.deleteOne({ _id: id });
+            return { status: status_code.OK, message: l10n.t('COMMON_SUCCESS', { key: 'Device', method: "remove" }) };
         } catch (error) {
             Logger.error(error);
             return { status: status_code.INTERNAL_SERVER_ERROR, message: l10n.t('SOMETHING_WENT_WRONG') };

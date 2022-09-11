@@ -75,6 +75,17 @@ const DEVICE_SCHEMA = {
             }),
         })
     }),
+
+    DELETE_DEVICE: celebrate({
+        params: Joi.object({
+            id: objectId().required().messages({
+                "string.empty": "Id not allowed to be empty",
+                "alternatives.types": "Id must be a string",
+                "any.required": "Id is required",
+                "string.pattern.name": "Invalid id"
+            })
+        })
+    })
 };
 
 export { DEVICE_SCHEMA };
